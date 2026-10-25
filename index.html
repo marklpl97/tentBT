@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расчет стоимости тента - БалтТент</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header .contacts {
+            font-size: 1.1em;
+            margin-top: 15px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .info-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            color: #856404;
+            font-size: 0.95em;
+        }
+
+        .fabric-row {
+            display: grid;
+            grid-template-columns: auto 1fr 1fr 1fr auto;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .fabric-label {
+            font-weight: bold;
+            color: #1e3c72;
+            min-width: 120px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        input[type="number"], select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-copy {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-add {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .fittings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .fitting-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .fitting-item label {
+            display: block;
+            font-weight: bold;
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+
+         .fitting-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .fitting-inputs .input-group label {
+            font-size: 0.8em;
+            margin-bottom: 3px;
+        }
+
+        .fitting-inputs input[type="number"] {
+            padding: 6px 8px;
+            font-size: 0.9em;
+            width: 100%;
+            min-width: 0;
+        }
+        .fitting-result {
+            margin-top: 10px;
+            padding: 8px;
+            background: #e7f3ff;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .service-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .service-item label {
+            display: block;
+            font-weight: bold;
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+
+        .btn-calculate {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .result-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+            display: none;
+        }
+
+        .result-section.active {
+            display: block;
+        }
+
+        .result-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .result-item h3 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+
+        .result-item p {
+            margin: 5px 0;
+            color: #333;
+        }
+
+        .total {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #1e3c72;
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .btn-pdf {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn-pdf:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 87, 108, 0.4);
+        }
+
+        /* Стили для PDF документа */
+        #pdfContent {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            width: 794px;
+            background: #e6f0fa;
+            color: #1e3c72;
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            padding: 40px;
+        }
+
+        #pdfContent .pdf-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #1e3c72;
+        }
+
+        #pdfContent .pdf-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+
+        #pdfContent .pdf-contacts {
+            font-size: 14px;
+            color: #1e3c72;
+            margin-top: 10px;
+        }
+
+        #pdfContent .pdf-subtitle {
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            color: #1e3c72;
+            margin: 30px 0 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+        }
+
+        #pdfContent .pdf-section {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 8px;
+            border-left: 4px solid #1e3c72;
+        }
+
+        #pdfContent .pdf-section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1e3c72;
+            margin-bottom: 15px;
+        }
+
+        #pdfContent .pdf-line {
+            font-size: 14px;
+            color: #1e3c72;
+            margin: 8px 0;
+            padding: 5px 0;
+            line-height: 1.5;
+        }
+
+        #pdfContent .pdf-total {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            color: #1e3c72;
+            padding: 20px;
+            margin-top: 25px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            border: 2px solid #1e3c72;
+        }
+
+        #pdfContent .pdf-date {
+            text-align: center;
+            font-size: 12px;
+            color: #1e3c72;
+            margin-top: 30px;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .fabric-row {
+                grid-template-columns: 1fr;
+            }
+
+            .fittings-grid, .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏕️ Расчет стоимости тента</h1>
+            <div class="contacts">
+                🌿 тф +7993 637 7924 | max +7993 637 7924 | www.balt-tent.ru
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="info-box">
+                <strong>📌 Важно:</strong> Если тент для автомобиля, к размерам прибавить: если спайка — 3 см, если на люверсах — 5 см, низ +5+10 см. И затем вычитаем 1 см на натяг.
+            </div>
+
+            <!-- Полотна тента -->
+            <div class="section">
+                <div class="section-title">Полотна тента</div>
+                <div id="fabricContainer">
+                    <div class="fabric-row" data-index="1">
+                        <div class="fabric-label">Полотно 1:</div>
+                        <div class="input-group">
+                            <label>Ширина (м)</label>
+                            <input type="number" step="0.01" class="fabric-width" value="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Высота (м)</label>
+                            <input type="number" step="0.01" class="fabric-height" value="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Плотность (г/м²)</label>
+                            <select class="fabric-density">
+                                <option value="470">470 г/м² - 540 руб</option>
+                                <option value="500">500 г/м² - 540 руб</option>
+                                <option value="630">630 г/м² - 580 руб</option>
+                                <option value="650">650 г/м² - 720 руб</option>
+                                <option value="900">900 г/м² - 900 руб</option>
+                            </select>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn-icon btn-copy" onclick="copyRow(this)" title="Копировать">📋</button>
+                            <button class="btn-icon btn-add" onclick="addRow()" title="Добавить">➕</button>
+                            <button class="btn-icon btn-delete" onclick="deleteRow(this)" title="Удалить">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Фурнитура -->
+            <div class="section">
+                <div class="section-title">Фурнитура</div>
+                <div class="fittings-grid">
+                    <div class="fitting-item">
+                        <label>Люверсы 10 мм</label>
+                        <div class="fitting-inputs">
+                            <div class="input-group">
+                                <label>Длина (м)</label>
+                                <input type="number" step="0.01" class="fitting-length" data-name="luc10" data-price="40" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Шаг (м)</label>
+                                <input type="number" step="0.01" class="fitting-step" data-name="luc10" value="0">
+                            </div>
+                        </div>
+                        <div class="fitting-result" data-result="luc10">Количество: 0 шт</div>
+                    </div>
+
+                    <div class="fitting-item">
+                        <label>Люверсы овальный 22Х42 белый</label>
+                        <div class="fitting-inputs">
+                            <div class="input-group">
+                                <label>Длина (м)</label>
+                                <input type="number" step="0.01" class="fitting-length" data-name="luc22w" data-price="50" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Шаг (м)</label>
+                                <input type="number" step="0.01" class="fitting-step" data-name="luc22w" value="0">
+                            </div>
+                        </div>
+                        <div class="fitting-result" data-result="luc22w">Количество: 0 шт</div>
+                    </div>
+
+                    <div class="fitting-item">
+                        <label>Люверсы овальный 22Х42 черный</label>
+                        <div class="fitting-inputs">
+                            <div class="input-group">
+                                <label>Длина (м)</label>
+                                <input type="number" step="0.01" class="fitting-length" data-name="luc22b" data-price="25" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Шаг (м)</label>
+                                <input type="number" step="0.01" class="fitting-step" data-name="luc22b" value="0">
+                            </div>
+                        </div>
+                        <div class="fitting-result" data-result="luc22b">Количество: 0 шт</div>
+                    </div>
+
+                    <div class="fitting-item">
+                        <label>Скоба тентовая</label>
+                        <div class="fitting-inputs">
+                            <div class="input-group">
+                                <label>Длина (м)</label>
+                                <input type="number" step="0.01" class="fitting-length" data-name="skoba1" data-price="16" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Шаг (м)</label>
+                                <input type="number" step="0.01" class="fitting-step" data-name="skoba1" value="0">
+                            </div>
+                        </div>
+                        <div class="fitting-result" data-result="skoba1">Количество: 0 шт</div>
+                    </div>
+
+                    <div class="fitting-item">
+                        <label>Скоба железная</label>
+                        <div class="fitting-inputs">
+                            <div class="input-group">
+                                <label>Длина (м)</label>
+                                <input type="number" step="0.01" class="fitting-length" data-name="skoba2" data-price="70" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Шаг (м)</label>
+                                <input type="number" step="0.01" class="fitting-step" data-name="skoba2" value="0">
+                            </div>
+                        </div>
+                        <div class="fitting-result" data-result="skoba2">Количество: 0 шт</div>
+                    </div>
+
+                    <div class="fitting-item">
+                        <label>Подкладка для скобы</label>
+                        <div class="fitting-inputs">
+                            <div class="input-group">
+                                <label>Длина (м)</label>
+                                <input type="number" step="0.01" class="fitting-length" data-name="podkladka" data-price="15" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Шаг (м)</label>
+                                <input type="number" step="0.01" class="fitting-step" data-name="podkladka" value="0">
+                            </div>
+                        </div>
+                        <div class="fitting-result" data-result="podkladka">Количество: 0 шт</div>
+                    </div>
+
+                    <div class="fitting-item">
+                        <label>Эспандер (пог.м)</label>
+                        <input type="number" step="0.01" class="fitting-quantity" data-name="espander" data-price="100" value="0">
+                    </div>
+
+                    <div class="fitting-item">
+                        <label>Наконечник (шт)</label>
+                        <input type="number" step="1" class="fitting-quantity" data-name="nakonechnik" data-price="100" value="0">
+                    </div>
+
+                    <div class="fitting-item">
+                        <label>ПВХ ремень (пог.м)</label>
+                        <input type="number" step="0.01" class="fitting-quantity" data-name="pvh" data-price="0" value="0">
+                    </div>
+
+                    <div class="fitting-item">
+                        <label>Молния (пог.м)</label>
+                        <input type="number" step="0.01" class="fitting-quantity" data-name="molniya" data-price="300" value="0">
+                    </div>
+
+                    <div class="fitting-item">
+                        <label>Ремень (пог.м)</label>
+                        <input type="number" step="0.01" class="fitting-quantity" data-name="remen" data-price="130" value="0">
+                    </div>
+
+                    <div class="fitting-item">
+                        <label>Бобышки (комплект 30 шт)</label>
+                        <input type="number" step="1" class="fitting-quantity" data-name="bobyshki" data-price="20" value="0">
+                    </div>
+
+                    <div class="fitting-item">
+                        <label>Ролики (шт)</label>
+                        <input type="number" step="1" class="fitting-quantity" data-name="roliki" data-price="133" value="0">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Услуги -->
+            <div class="section">
+                <div class="section-title">Дополнительные услуги</div>
+                <div class="services-grid">
+                    <div class="service-item">
+                        <label>Замер (руб)</label>
+                        <input type="number" step="1" id="zamer" value="0">
+                    </div>
+                    <div class="service-item">
+                        <label>Монтаж (руб)</label>
+                        <input type="number" step="1" id="montazh" value="0">
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-calculate" onclick="calculate()">Рассчитать стоимость</button>
+
+            <div class="result-section" id="resultSection">
+                <div class="section-title">Результат расчета</div>
+                <div id="fabricResults"></div>
+                <div id="fittingsResults"></div>
+                <div class="total" id="totalResult"></div>
+                <button class="btn-pdf" onclick="generatePDF()">📄 Скачать PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Скрытый блок для генерации PDF -->
+    <div id="pdfContent"></div>
+
+    <script>
+        const prices = {
+            470: 540,
+            500: 540,
+            630: 580,
+            650: 720,
+            900: 900
+        };
+
+        let fabricCounter = 1;
+
+        function copyRow(button) {
+            const row = button.closest('.fabric-row');
+            const newRow = row.cloneNode(true);
+            fabricCounter++;
+            newRow.setAttribute('data-index', fabricCounter);
+            newRow.querySelector('.fabric-label').textContent = `Полотно ${fabricCounter}:`;
+            row.parentNode.appendChild(newRow);
+        }
+
+        function addRow() {
+            fabricCounter++;
+            const container = document.getElementById('fabricContainer');
+            const newRow = document.createElement('div');
+            newRow.className = 'fabric-row';
+            newRow.setAttribute('data-index', fabricCounter);
+            newRow.innerHTML = `
+                <div class="fabric-label">Полотно ${fabricCounter}:</div>
+                <div class="input-group">
+                    <label>Ширина (м)</label>
+                    <input type="number" step="0.01" class="fabric-width" value="0">
+                </div>
+                <div class="input-group">
+                    <label>Высота (м)</label>
+                    <input type="number" step="0.01" class="fabric-height" value="0">
+                </div>
+                <div class="input-group">
+                    <label>Плотность (г/м²)</label>
+                    <select class="fabric-density">
+                        <option value="470">470 г/м² - 540 руб</option>
+                        <option value="500">500 г/м² - 540 руб</option>
+                        <option value="630">630 г/м² - 580 руб</option>
+                        <option value="650">650 г/м² - 720 руб</option>
+                        <option value="900">900 г/м² - 900 руб</option>
+                    </select>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn-icon btn-copy" onclick="copyRow(this)" title="Копировать">📋</button>
+                    <button class="btn-icon btn-add" onclick="addRow()" title="Добавить">➕</button>
+                    <button class="btn-icon btn-delete" onclick="deleteRow(this)" title="Удалить">🗑️</button>
+                </div>
+            `;
+            container.appendChild(newRow);
+        }
+
+        function deleteRow(button) {
+            const rows = document.querySelectorAll('.fabric-row');
+            if (rows.length > 1) {
+                button.closest('.fabric-row').remove();
+                updateFabricLabels();
+            }
+        }
+
+        function updateFabricLabels() {
+            const rows = document.querySelectorAll('.fabric-row');
+            rows.forEach((row, index) => {
+                row.setAttribute('data-index', index + 1);
+                row.querySelector('.fabric-label').textContent = `Полотно ${index + 1}:`;
+            });
+            fabricCounter = rows.length;
+        }
+
+        function calculateFittingQuantity(name) {
+            const lengthInput = document.querySelector(`.fitting-length[data-name="${name}"]`);
+            const stepInput = document.querySelector(`.fitting-step[data-name="${name}"]`);
+            const resultDiv = document.querySelector(`[data-result="${name}"]`);
+
+            if (lengthInput && stepInput && resultDiv) {
+                const length = parseFloat(lengthInput.value) || 0;
+                const step = parseFloat(stepInput.value) || 0;
+                
+                if (step > 0 && length > 0) {
+                    const quantity = Math.ceil(length / step);
+                    resultDiv.textContent = `Количество: ${quantity} шт`;
+                    return quantity;
+                } else {
+                    resultDiv.textContent = `Количество: 0 шт`;
+                    return 0;
+                }
+            }
+            return 0;
+        }
+
+        function calculate() {
+            const fabricRows = document.querySelectorAll('.fabric-row');
+            let totalFabricCost = 0;
+            let totalFabricArea = 0;
+            const fabricResults = [];
+
+            fabricRows.forEach((row, index) => {
+                const width = parseFloat(row.querySelector('.fabric-width').value) || 0;
+                const height = parseFloat(row.querySelector('.fabric-height').value) || 0;
+                const density = parseInt(row.querySelector('.fabric-density').value);
+                
+                const area = width * height;
+                const cost = area * prices[density];
+                
+                totalFabricArea += area;
+                totalFabricCost += cost;
+                
+                if (area > 0) {
+                    fabricResults.push({
+                        index: index + 1,
+                        area: area.toFixed(2),
+                        cost: cost.toFixed(2),
+                        density: density
+                    });
+                }
+            });
+
+            const fittings = [
+                { name: 'luc10', title: 'Люверсы 10 мм', price: 40 },
+                { name: 'luc22w', title: 'Люверсы овальный 22Х42 белый', price: 50 },
+                { name: 'luc22b', title: 'Люверсы овальный 22Х42 черный', price: 25 },
+                { name: 'skoba1', title: 'Скоба тентовая', price: 16 },
+                { name: 'skoba2', title: 'Скоба железная', price: 70 },
+                { name: 'podkladka', title: 'Подкладка для скобы', price: 15 },
+                { name: 'espander', title: 'Эспандер', price: 100 },
+                { name: 'nakonechnik', title: 'Наконечник', price: 100 },
+                { name: 'pvh', title: 'ПВХ ремень', price: 0 },
+                { name: 'molniya', title: 'Молния', price: 300 },
+                { name: 'remen', title: 'Ремень', price: 130 },
+                { name: 'bobyshki', title: 'Бобышки (комплект)', price: 20 },
+                { name: 'roliki', title: 'Ролики', price: 133 }
+            ];
+
+            let totalFittingsCost = 0;
+            const fittingsResults = [];
+
+            fittings.forEach(fitting => {
+                let quantity = 0;
+                
+                if (['luc10', 'luc22w', 'luc22b', 'skoba1', 'skoba2', 'podkladka'].includes(fitting.name)) {
+                    quantity = calculateFittingQuantity(fitting.name);
+                } else {
+                    const input = document.querySelector(`.fitting-quantity[data-name="${fitting.name}"]`);
+                    quantity = parseFloat(input.value) || 0;
+                }
+
+                if (quantity > 0 && fitting.price > 0) {
+                    const cost = quantity * fitting.price;
+                    totalFittingsCost += cost;
+                    fittingsResults.push({
+                        title: fitting.title,
+                        quantity: quantity,
+                        cost: cost.toFixed(2)
+                    });
+                }
+            });
+
+            const zamer = parseFloat(document.getElementById('zamer').value) || 0;
+            const montazh = parseFloat(document.getElementById('montazh').value) || 0;
+            const servicesCost = zamer + montazh;
+
+            const totalCost = totalFabricCost + totalFittingsCost + servicesCost;
+
+            const fabricResultsDiv = document.getElementById('fabricResults');
+            let fabricHTML = '<div class="result-item"><h3>Полотна:</h3>';
+            fabricResults.forEach(result => {
+                fabricHTML += `<p>Полотно ${result.index}: S = ${result.area} м², стоимость = ${result.cost} руб</p>`;
+            });
+            fabricHTML += `<p><strong>Общая стоимость полотен: ${totalFabricCost.toFixed(2)} руб, площадь: ${totalFabricArea.toFixed(2)} м²</strong></p></div>`;
+            fabricResultsDiv.innerHTML = fabricHTML;
+
+            const fittingsResultsDiv = document.getElementById('fittingsResults');
+            let fittingsHTML = '<div class="result-item"><h3>Фурнитура:</h3>';
+            fittingsResults.forEach(result => {
+                fittingsHTML += `<p>${result.title}: ${result.quantity} шт, стоимость = ${result.cost} руб</p>`;
+            });
+            if (zamer > 0) fittingsHTML += `<p>Замер: ${zamer} руб</p>`;
+            if (montazh > 0) fittingsHTML += `<p>Монтаж: ${montazh} руб</p>`;
+            fittingsHTML += `<p><strong>Общая стоимость фурнитуры и услуг: ${(totalFittingsCost + servicesCost).toFixed(2)} руб</strong></p></div>`;
+            fittingsResultsDiv.innerHTML = fittingsHTML;
+
+            document.getElementById('totalResult').innerHTML = `
+                <p>ОБЩАЯ СТОИМОСТЬ: <strong>${totalCost.toFixed(2)} руб</strong></p>
+            `;
+
+            document.getElementById('resultSection').classList.add('active');
+
+            window.calculationData = {
+                fabricResults,
+                totalFabricCost: totalFabricCost.toFixed(2),
+                totalFabricArea: totalFabricArea.toFixed(2),
+                fittingsResults,
+                zamer,
+                montazh,
+                totalFittingsCost: totalFittingsCost.toFixed(2),
+                servicesCost: servicesCost.toFixed(2),
+                totalCost: totalCost.toFixed(2)
+            };
+        }
+
+        function generatePDF() {
+            const data = window.calculationData;
+            if (!data) {
+                alert('Сначала выполните расчет!');
+                return;
+            }
+
+            const today = new Date().toLocaleDateString('ru-RU');
+            const pdfContent = document.getElementById('pdfContent');
+
+            // Формируем HTML для PDF
+            let html = `
+                <div class="pdf-header">
+                    <div class="pdf-title">ПК БалтТент</div>
+                    <div class="pdf-contacts">
+                        🌿 тф +7993 637 7924 | max +7993 637 7924<br>
+                        www.balt-tent.ru
+                    </div>
+                </div>
+                <div class="pdf-subtitle">КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ</div>
+                
+                <div class="pdf-section">
+                    <div class="pdf-section-title">Полотна:</div>
+            `;
+
+            data.fabricResults.forEach(result => {
+                html += `<div class="pdf-line">Полотно ${result.index}: S = ${result.area} м², стоимость = ${result.cost} руб</div>`;
+            });
+
+            html += `
+                    <div class="pdf-line"><strong>Общая стоимость полотен: ${data.totalFabricCost} руб, площадь: ${data.totalFabricArea} м²</strong></div>
+                </div>
+                
+                <div class="pdf-section">
+                    <div class="pdf-section-title">Стоимость фурнитуры:</div>
+            `;
+
+            data.fittingsResults.forEach(result => {
+                html += `<div class="pdf-line">${result.title}: ${result.quantity} шт, стоимость = ${result.cost} руб</div>`;
+            });
+
+            if (data.zamer > 0) {
+                html += `<div class="pdf-line">Замер: ${data.zamer} руб</div>`;
+            }
+            if (data.montazh > 0) {
+                html += `<div class="pdf-line">Монтаж: ${data.montazh} руб</div>`;
+            }
+
+            html += `
+                    <div class="pdf-line"><strong>Общая стоимость фурнитуры и услуг: ${data.totalFittingsCost} руб</strong></div>
+                </div>
+                
+                <div class="pdf-total">
+                    ОБЩАЯ СТОИМОСТЬ: ${data.totalCost} руб
+                </div>
+                
+                <div class="pdf-date">Дата расчета: ${today}</div>
+            `;
+
+            pdfContent.innerHTML = html;
+
+            // Делаем блок видимым для html2canvas (вне поля зрения пользователя)
+            pdfContent.style.position = 'fixed';
+            pdfContent.style.left = '0';
+            pdfContent.style.top = '0';
+            pdfContent.style.zIndex = '-1';
+            pdfContent.style.opacity = '1';
+            pdfContent.style.pointerEvents = 'none';
+            pdfContent.style.background = '#e6f0fa';
+
+            // Небольшая задержка, чтобы браузер успел отрисовать
+            setTimeout(() => {
+                html2canvas(pdfContent, {
+                    scale: 2,
+                    useCORS: true,
+                    letterRendering: true,
+                    windowWidth: 794,
+                    backgroundColor: '#e6f0fa',
+                    scrollX: 0,
+                    scrollY: 0
+                }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/jpeg', 0.98);
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+                    let heightLeft = pdfHeight;
+                    let position = 0;
+
+                    pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight);
+                    heightLeft -= pdf.internal.pageSize.getHeight();
+
+                    // Добавляем страницы, если контент не помещается на одну
+                    while (heightLeft > 0) {
+                        position = heightLeft - pdfHeight;
+                        pdf.addPage();
+                        pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight);
+                        heightLeft -= pdf.internal.pageSize.getHeight();
+                    }
+
+                    pdf.save(`Расчет_тента_${today.replace(/\./g, '-')}.pdf`);
+
+                    // Возвращаем блок обратно за пределы экрана
+                    pdfContent.style.position = 'absolute';
+                    pdfContent.style.left = '-9999px';
+                    pdfContent.style.top = '0';
+                    pdfContent.style.zIndex = '';
+                    pdfContent.style.opacity = '';
+                    pdfContent.style.pointerEvents = '';
+                    pdfContent.style.background = '';
+                }).catch(err => {
+                    console.error('Ошибка генерации PDF:', err);
+                    alert('Не удалось сгенерировать PDF. Попробуйте ещё раз.');
+                    pdfContent.style.position = 'absolute';
+                    pdfContent.style.left = '-9999px';
+                    pdfContent.style.top = '0';
+                });
+            }, 100);
+        }
+
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('fitting-length') || e.target.classList.contains('fitting-step')) {
+                const name = e.target.dataset.name;
+                calculateFittingQuantity(name);
+            }
+        });
+    </script>
+</body>
+</html>
