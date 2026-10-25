@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Расчет стоимости тента - БалтТент</title>
+    <title>Расчет стоимости тентов - БалтТент</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
@@ -104,7 +104,7 @@
             margin-bottom: 5px;
         }
 
-        input[type="number"], select {
+        input[type="number"], input[type="text"], select {
             padding: 10px;
             border: 2px solid #ddd;
             border-radius: 5px;
@@ -112,7 +112,7 @@
             transition: border-color 0.3s;
         }
 
-        input[type="number"]:focus, select:focus {
+        input[type="number"]:focus, input[type="text"]:focus, select:focus {
             outline: none;
             border-color: #667eea;
         }
@@ -481,7 +481,7 @@
             }
 
             /* Убираем зум при фокусе на iOS */
-            input[type="number"], select {
+            input[type="number"], input[type="text"], select {
                 font-size: 16px;
             }
 
@@ -548,7 +548,7 @@
 
         <div class="content">
             <div class="info-box">
-                <strong>📌 Важно:</strong> Если тент для автомобиля, к размерам прибавить: если спайка — 3 см, если на люверсах — 5 см, низ +5+10 см. И затем вычитаем 1 см на натяг. Форма Мешок: закрыт с 3х сторон+крыша. Ворота: закрыт с 2х сторон ,один проезд открыт.Конструкция: Прямой или Аэродинамический-со скосом(полную стоимость умножаем на 1,2).
+                <strong>📌 Важно:</strong> Если тент для автомобиля, к размерам прибавить: если спайка — 3 см, если на люверсах — 5 см, низ +5+10 см. И затем вычитаем 1 см на натяг. Форма Мешок: закрыт с 3х сторон+крыша. Ворота: закрыт с 2х сторон ,один проезд открыт.Конструкция: Прямой или Аэродинамический(полную стоимость умножаем на 1,2).
             </div>
 
             <!-- Полотна тента -->
@@ -711,6 +711,10 @@
                     <div class="fitting-item">
                         <label>Ролики (шт)</label>
                         <input type="number" step="1" class="fitting-quantity" data-name="roliki" data-price="133" value="0">
+                        <div class="input-group" style="margin-top: 8px;">
+                            <label>Цвет</label>
+                            <input type="text" class="roliki-color" value="" placeholder="Введите цвет">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -726,6 +730,14 @@
                     <div class="service-item">
                         <label>Монтаж (руб)</label>
                         <input type="number" step="1" id="montazh" value="0">
+                    </div>
+                    <div class="service-item">
+                        <label>Дополнительная стоимость, руб</label>
+                        <input type="number" step="1" id="dopCost" value="0">
+                    </div>
+                    <div class="service-item">
+                        <label>Доставка, руб</label>
+                        <input type="number" step="1" id="dostavka" value="0">
                     </div>
                 </div>
             </div>
@@ -908,16 +920,23 @@
 
             const zamer = parseFloat(document.getElementById('zamer').value) || 0;
             const montazh = parseFloat(document.getElementById('montazh').value) || 0;
+            const dopCost = parseFloat(document.getElementById('dopCost').value) || 0;
+            const dostavka = parseFloat(document.getElementById('dostavka').value) || 0;
             const servicesCost = zamer + montazh;
+            const rolikiColor = document.querySelector('.roliki-color').value.trim();
 
-            const totalCost = totalFabricCost + totalFittingsCost + servicesCost;
+            const totalCost = totalFabricCost + totalFittingsCost + servicesCost + dopCost + dostavka;
 
             const fabricResultsDiv = document.getElementById('fabricResults');
             let fabricHTML = '<div class="result-item"><h3>Полотна:</h3>';
             fabricResults.forEach(result => {
                 fabricHTML += `<p>Полотно ${result.index}: S = ${result.area} м², стоимость = ${result.cost} руб</p>`;
             });
-            fabricHTML += `<p><strong>Общая стоимость полотен: ${totalFabricCost.toFixed(2)} руб, площадь: ${totalFabricArea.toFixed(2)} м²</strong></p></div>`;
+            fabricHTML += `<p><strong>Общая стоимость полотен: ${totalFabricCost.toFixed(2)} руб, площадь: ${totalFabricArea.toFixed(2)} м²</strong></p>`;
+            if (rolikiColor) {
+                fabricHTML += `<p>Цвет: ${rolikiColor}</p>`;
+            }
+            fabricHTML += `</div>`;
             fabricResultsDiv.innerHTML = fabricHTML;
 
             const fittingsResultsDiv = document.getElementById('fittingsResults');
@@ -927,7 +946,16 @@
             });
             if (zamer > 0) fittingsHTML += `<p>Замер: ${zamer} руб</p>`;
             if (montazh > 0) fittingsHTML += `<p>Монтаж: ${montazh} руб</p>`;
-            fittingsHTML += `<p><strong>Общая стоимость фурнитуры и услуг: ${(totalFittingsCost + servicesCost).toFixed(2)} руб</strong></p></div>`;
+            if (dopCost > 0) fittingsHTML += `<p>Дополнительная стоимость: ${dopCost} руб</p>`;
+            if (dostavka > 0) fittingsHTML += `<p>Доставка: ${dostavka} руб</p>`;
+            
+            fittingsHTML += `<p><strong>Общая стоимость фурнитуры и услуг: ${(totalFittingsCost + servicesCost).toFixed(2)} руб</strong></p>`;
+            
+            if (zamer === 0) fittingsHTML += `<p>Самозамер</p>`;
+            if (montazh === 0) fittingsHTML += `<p>Самомонтаж</p>`;
+            if (dostavka === 0) fittingsHTML += `<p>Самовывоз</p>`;
+            
+            fittingsHTML += `</div>`;
             fittingsResultsDiv.innerHTML = fittingsHTML;
 
             document.getElementById('totalResult').innerHTML = `
@@ -943,9 +971,12 @@
                 fittingsResults,
                 zamer,
                 montazh,
+                dopCost,
+                dostavka,
                 totalFittingsCost: totalFittingsCost.toFixed(2),
                 servicesCost: servicesCost.toFixed(2),
-                totalCost: totalCost.toFixed(2)
+                totalCost: totalCost.toFixed(2),
+                rolikiColor: rolikiColor
             };
         }
 
@@ -980,6 +1011,13 @@
 
             html += `
                     <div class="pdf-line"><strong>Общая стоимость полотен: ${data.totalFabricCost} руб, площадь: ${data.totalFabricArea} м²</strong></div>
+            `;
+            
+            if (data.rolikiColor) {
+                html += `<div class="pdf-line">Цвет: ${data.rolikiColor}</div>`;
+            }
+
+            html += `
                 </div>
                 
                 <div class="pdf-section">
@@ -996,9 +1034,23 @@
             if (data.montazh > 0) {
                 html += `<div class="pdf-line">Монтаж: ${data.montazh} руб</div>`;
             }
+            if (data.dopCost > 0) {
+                html += `<div class="pdf-line">Дополнительная стоимость: ${data.dopCost} руб</div>`;
+            }
+            if (data.dostavka > 0) {
+                html += `<div class="pdf-line">Доставка: ${data.dostavka} руб</div>`;
+            }
+
+            const totalFittingsAndServices = (parseFloat(data.totalFittingsCost) + parseFloat(data.servicesCost)).toFixed(2);
+            html += `
+                    <div class="pdf-line"><strong>Общая стоимость фурнитуры и услуг: ${totalFittingsAndServices} руб</strong></div>
+            `;
+            
+            if (data.zamer === 0) html += `<div class="pdf-line">Самозамер</div>`;
+            if (data.montazh === 0) html += `<div class="pdf-line">Самомонтаж</div>`;
+            if (data.dostavka === 0) html += `<div class="pdf-line">Самовывоз</div>`;
 
             html += `
-                    <div class="pdf-line"><strong>Общая стоимость фурнитуры и услуг: ${data.totalFittingsCost} руб</strong></div>
                 </div>
                 
                 <div class="pdf-total">
