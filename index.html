@@ -931,7 +931,7 @@
             let fabricHTML = '<div class="result-item"><h3>Полотна:</h3>';
             fabricResults.forEach(result => {
                 // ДОБАВЛЕНО: плотность ${result.density} г/м² после стоимости
-                fabricHTML += `<p>Полотно ${result.index}: S = ${result.area} м², стоимость = ${result.cost} руб, плотность ${result.densityName} г/м²</p>`;
+                fabricHTML += `<p>Полотно ${result.index}: S = ${result.area} м², стоимость = ${result.cost} руб, плотность ${result.densityName}</p>`;
             });
             fabricHTML += `<p><strong>Общая стоимость полотен: ${totalFabricCost.toFixed(2)} руб, площадь: ${totalFabricArea.toFixed(2)} м²</strong></p>`;
             if (rolikiColor) {
@@ -1008,7 +1008,7 @@
 
             data.fabricResults.forEach(result => {
                 // ДОБАВЛЕНО: плотность ${result.density} г/м² после стоимости
-                html += `<div class="pdf-line">Полотно ${result.index}: S = ${result.area} м², стоимость = ${result.cost} руб, плотность ${result.densityName} г/м²</div>`;
+                html += `<div class="pdf-line">Полотно ${result.index}: S = ${result.area} м², стоимость = ${result.cost} руб, плотность ${result.densityName}</div>`;
             });
 
             html += `
