@@ -568,11 +568,11 @@
                         <div class="input-group">
                             <label>Плотность (г/м²)</label>
                             <select class="fabric-density">
-                                <option value="900">470 г/м² - 540 руб</option>
-                                <option value="950">500 г/м² - 540 руб</option>
-                                <option value="1000">630 г/м² - 580 руб</option>
-                                <option value="1100">650 г/м² - 720 руб</option>
-                                <option value="1200">900 г/м² - 900 руб</option>
+                                <option value="900">470 г/м² - 900 руб</option>
+                                <option value="950">500 г/м² - 950 руб</option>
+                                <option value="1000">630 г/м² - 1000 руб</option>
+                                <option value="1100">650 г/м² - 1100 руб</option>
+                                <option value="1200">900 г/м² - 1200 руб</option>
                             </select>
                         </div>
                         <div class="action-buttons">
@@ -759,11 +759,11 @@
 
     <script>
         const prices = {
-            470: 540,
-            500: 540,
-            630: 580,
-            650: 720,
-            900: 900
+            470: 900,
+            500: 950,
+            630: 1000,
+            650: 1100,
+            900: 1200
         };
 
         let fabricCounter = 1;
@@ -796,11 +796,11 @@
                 <div class="input-group">
                     <label>Плотность (г/м²)</label>
                     <select class="fabric-density">
-                        <option value="470">470 г/м² - 540 руб</option>
-                        <option value="500">500 г/м² - 540 руб</option>
-                        <option value="630">630 г/м² - 580 руб</option>
-                        <option value="650">650 г/м² - 720 руб</option>
-                        <option value="900">900 г/м² - 900 руб</option>
+                        <option value="470">470 г/м² - 900 руб</option>
+                        <option value="500">500 г/м² - 950 руб</option>
+                        <option value="630">630 г/м² - 1000 руб</option>
+                        <option value="650">650 г/м² - 1100 руб</option>
+                        <option value="900">900 г/м² - 1200 руб</option>
                     </select>
                 </div>
                 <div class="action-buttons">
@@ -872,7 +872,7 @@
                         index: index + 1,
                         area: area.toFixed(2),
                         cost: cost.toFixed(2),
-                        density: density
+                        densityName: density + " г/м²" // Сохраняем число с припиской " г/м²"
                     });
                 }
             });
@@ -880,16 +880,16 @@
             const fittings = [
                 { name: 'luc10', title: 'Люверсы 10 мм', price: 40, unit: 'шт' },
                 { name: 'luc22w', title: 'Люверсы овальный 22Х42 белый', price: 50, unit: 'шт' },
-                { name: 'luc22b', title: 'Люверсы овальный 22Х42 черный', price: 25, unit: 'шт' },
-                { name: 'skoba1', title: 'Скоба тентовая', price: 16, unit: 'шт' },
+                { name: 'luc22b', title: 'Люверсы овальный 22Х42 черный', price: 40, unit: 'шт' },
+                { name: 'skoba1', title: 'Скоба тентовая', price: 50, unit: 'шт' },
                 { name: 'skoba2', title: 'Скоба железная', price: 70, unit: 'шт' },
-                { name: 'podkladka', title: 'Подкладка для скобы', price: 15, unit: 'шт' },
+                { name: 'podkladka', title: 'Подкладка для скобы', price: 25, unit: 'шт' },
                 { name: 'espander', title: 'Эспандер', price: 100, unit: 'пог.м' },
                 { name: 'nakonechnik', title: 'Наконечник', price: 100, unit: 'шт' },
-                { name: 'pvh', title: 'ПВХ ремень', price: 250, unit: 'пог.м' },
-                { name: 'molniya', title: 'Молния', price: 300, unit: 'пог.м' },
-                { name: 'remen', title: 'Ремень', price: 130, unit: 'пог.м' },
-                { name: 'bobyshki', title: 'Бобышки (комплект)', price: 20, unit: 'компл.' },
+                { name: 'pvh', title: 'ПВХ ремень', price: 150, unit: 'пог.м' },
+                { name: 'molniya', title: 'Молния', price: 1500, unit: 'пог.м' },
+                { name: 'remen', title: 'Трос металлический ', price: 70, unit: 'пог.м' },
+                { name: 'bobyshki', title: 'Бобышки (комплект)', price: 90, unit: 'компл.' },
                 { name: 'roliki', title: 'Ролики', price: 133, unit: 'шт' }
             ];
 
@@ -931,7 +931,7 @@
             let fabricHTML = '<div class="result-item"><h3>Полотна:</h3>';
             fabricResults.forEach(result => {
                 // ДОБАВЛЕНО: плотность ${result.density} г/м² после стоимости
-                fabricHTML += `<p>Полотно ${result.index}: S = ${result.area} м², стоимость = ${result.cost} руб, плотность ${result.density} г/м²</p>`;
+                fabricHTML += `<p>Полотно ${result.index}: S = ${result.area} м², стоимость = ${result.cost} руб, плотность ${result.densityName} г/м²</p>`;
             });
             fabricHTML += `<p><strong>Общая стоимость полотен: ${totalFabricCost.toFixed(2)} руб, площадь: ${totalFabricArea.toFixed(2)} м²</strong></p>`;
             if (rolikiColor) {
@@ -1008,7 +1008,7 @@
 
             data.fabricResults.forEach(result => {
                 // ДОБАВЛЕНО: плотность ${result.density} г/м² после стоимости
-                html += `<div class="pdf-line">Полотно ${result.index}: S = ${result.area} м², стоимость = ${result.cost} руб, плотность ${result.density} г/м²</div>`;
+                html += `<div class="pdf-line">Полотно ${result.index}: S = ${result.area} м², стоимость = ${result.cost} руб, плотность ${result.densityName} г/м²</div>`;
             });
 
             html += `
