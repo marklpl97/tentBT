@@ -568,11 +568,11 @@
                         <div class="input-group">
                             <label>Плотность (г/м²)</label>
                             <select class="fabric-density">
-                                <option value="470">470 г/м² - 950 руб</option>
-                                <option value="500">500 г/м² - 1000 руб</option>
-                                <option value="630">630 г/м² - 1100 руб</option>
-                                <option value="650">650 г/м² - 1200 руб</option>
-                                <option value="900">900 г/м² - 1300 руб</option>
+                                <option value="900">470 г/м² - 540 руб</option>
+                                <option value="950">500 г/м² - 540 руб</option>
+                                <option value="1000">630 г/м² - 580 руб</option>
+                                <option value="1100">650 г/м² - 720 руб</option>
+                                <option value="1200">900 г/м² - 900 руб</option>
                             </select>
                         </div>
                         <div class="action-buttons">
@@ -930,7 +930,8 @@
             const fabricResultsDiv = document.getElementById('fabricResults');
             let fabricHTML = '<div class="result-item"><h3>Полотна:</h3>';
             fabricResults.forEach(result => {
-                fabricHTML += `<p>Полотно ${result.index}: S = ${result.area} м², стоимость = ${result.cost} руб</p>`;
+                // ДОБАВЛЕНО: плотность ${result.density} г/м² после стоимости
+                fabricHTML += `<p>Полотно ${result.index}: S = ${result.area} м², стоимость = ${result.cost} руб, плотность ${result.density} г/м²</p>`;
             });
             fabricHTML += `<p><strong>Общая стоимость полотен: ${totalFabricCost.toFixed(2)} руб, площадь: ${totalFabricArea.toFixed(2)} м²</strong></p>`;
             if (rolikiColor) {
@@ -1006,7 +1007,8 @@
             `;
 
             data.fabricResults.forEach(result => {
-                html += `<div class="pdf-line">Полотно ${result.index}: S = ${result.area} м², стоимость = ${result.cost} руб</div>`;
+                // ДОБАВЛЕНО: плотность ${result.density} г/м² после стоимости
+                html += `<div class="pdf-line">Полотно ${result.index}: S = ${result.area} м², стоимость = ${result.cost} руб, плотность ${result.density} г/м²</div>`;
             });
 
             html += `
