@@ -49,6 +49,8 @@
         .total { font-size: 1.5em; font-weight: bold; color: #1e3c72; text-align: center; padding: 20px; background: white; border-radius: 8px; margin-top: 20px; }
         .btn-pdf { width: 100%; padding: 15px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none; border-radius: 8px; font-size: 1.3em; font-weight: bold; cursor: pointer; transition: all 0.3s; margin-top: 20px; }
         .btn-pdf:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(245, 87, 108, 0.4); }
+        .btn-png { width: 100%; padding: 15px; background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); color: white; border: none; border-radius: 8px; font-size: 1.3em; font-weight: bold; cursor: pointer; transition: all 0.3s; margin-top: 10px; }
+        .btn-png:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(67, 206, 162, 0.4); }
         #pdfContent { position: absolute; left: -9999px; top: 0; width: 794px; background: #e6f0fa; color: #1e3c72; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; padding: 40px; }
         #pdfContent .pdf-header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #1e3c72; }
         #pdfContent .pdf-title { font-size: 32px; font-weight: bold; color: #1e3c72; margin-bottom: 10px; }
@@ -60,7 +62,7 @@
         #pdfContent .pdf-total { font-size: 20px; font-weight: bold; text-align: center; color: #1e3c72; padding: 20px; margin-top: 25px; background: rgba(255, 255, 255, 0.8); border-radius: 8px; border: 2px solid #1e3c72; }
         #pdfContent .pdf-date { text-align: center; font-size: 12px; color: #1e3c72; margin-top: 30px; font-style: italic; }
         @media (max-width: 900px) { .container { border-radius: 12px; } .header h1 { font-size: 2em; } .fittings-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); } }
-        @media (max-width: 768px) { body { padding: 10px; } .container { border-radius: 10px; } .header { padding: 20px 15px; } .header h1 { font-size: 1.5em; line-height: 1.3; } .header .contacts { font-size: 0.9em; line-height: 1.5; word-break: break-word; } .content { padding: 15px; } .section { padding: 15px; margin-bottom: 20px; } .section-title { font-size: 1.2em; margin-bottom: 15px; } .info-box { font-size: 0.85em; padding: 12px; } .fabric-row { grid-template-columns: 1fr; gap: 10px; padding: 12px; } .fabric-label { min-width: 0; font-size: 1.05em; } .action-buttons { justify-content: flex-start; flex-wrap: wrap; } .btn-icon { width: 40px; height: 40px; } .fittings-grid, .services-grid { grid-template-columns: 1fr; } .fitting-inputs { grid-template-columns: 1fr 1fr; } input[type="number"], input[type="text"], select { font-size: 16px; } .btn-calculate, .btn-pdf { font-size: 1.1em; padding: 14px; } .result-item { padding: 12px; } .result-item h3 { font-size: 1.1em; } .result-item p { font-size: 0.9em; } .total { font-size: 1.2em; padding: 15px; } }
+        @media (max-width: 768px) { body { padding: 10px; } .container { border-radius: 10px; } .header { padding: 20px 15px; } .header h1 { font-size: 1.5em; line-height: 1.3; } .header .contacts { font-size: 0.9em; line-height: 1.5; word-break: break-word; } .content { padding: 15px; } .section { padding: 15px; margin-bottom: 20px; } .section-title { font-size: 1.2em; margin-bottom: 15px; } .info-box { font-size: 0.85em; padding: 12px; } .fabric-row { grid-template-columns: 1fr; gap: 10px; padding: 12px; } .fabric-label { min-width: 0; font-size: 1.05em; } .action-buttons { justify-content: flex-start; flex-wrap: wrap; } .btn-icon { width: 40px; height: 40px; } .fittings-grid, .services-grid { grid-template-columns: 1fr; } .fitting-inputs { grid-template-columns: 1fr 1fr; } input[type="number"], input[type="text"], select { font-size: 16px; } .btn-calculate, .btn-pdf, .btn-png { font-size: 1.1em; padding: 14px; } .result-item { padding: 12px; } .result-item h3 { font-size: 1.1em; } .result-item p { font-size: 0.9em; } .total { font-size: 1.2em; padding: 15px; } }
         @media (max-width: 400px) { .header h1 { font-size: 1.3em; } .section-title { font-size: 1.1em; } .fitting-inputs { grid-template-columns: 1fr; } .btn-icon { width: 36px; height: 36px; } .result-item p, .total { font-size: 1em; } }
     </style>
 </head>
@@ -90,7 +92,6 @@
                         </div>
                         <div class="input-group">
                             <label>Плотность (г/м²)</label>
-                            <!-- ИСПРАВЛЕНО: value теперь равен плотности, а не цене -->
                             <select class="fabric-density">
                                 <option value="470">470 г/м² - 900 руб</option>
                                 <option value="500">500 г/м² - 950 руб</option>
@@ -194,6 +195,7 @@
                 <div id="fittingsResults"></div>
                 <div class="total" id="totalResult"></div>
                 <button class="btn-pdf" onclick="generatePDF()">📄 Скачать PDF</button>
+                <button class="btn-png" onclick="generatePNG()">🖼️ Скачать PNG</button>
             </div>
         </div>
     </div>
@@ -219,7 +221,6 @@
             const newRow = document.createElement('div');
             newRow.className = 'fabric-row';
             newRow.setAttribute('data-index', fabricCounter);
-            // ИСПРАВЛЕНО: value теперь равен плотности и здесь тоже
             newRow.innerHTML = `
                 <div class="fabric-label">Полотно ${fabricCounter}:</div>
                 <div class="input-group"><label>Ширина (м)</label><input type="number" step="0.01" class="fabric-width" value="0"></div>
@@ -297,7 +298,7 @@
                         index: index + 1,
                         area: area.toFixed(2),
                         cost: cost.toFixed(2),
-                        densityName: density + " г/м²" // Теперь здесь будет корректно "630 г/м²"
+                        densityName: density + " г/м²"
                     });
                 }
             });
@@ -385,11 +386,8 @@
             };
         }
 
-        function generatePDF() {
-            const data = window.calculationData;
-            if (!data) { alert('Сначала выполните расчет!'); return; }
+        function buildPDFHTML(data) {
             const today = new Date().toLocaleDateString('ru-RU');
-            const pdfContent = document.getElementById('pdfContent');
 
             let html = `
                 <div class="pdf-header">
@@ -425,8 +423,16 @@
             if (data.dostavka === 0) html += `<div class="pdf-line">Самовывоз</div>`;
 
             html += `</div><div class="pdf-total">ОБЩАЯ СТОИМОСТЬ: ${data.totalCost} руб</div><div class="pdf-date">Дата расчета: ${today}</div>`;
+            return html;
+        }
 
-            pdfContent.innerHTML = html;
+        function generatePDF() {
+            const data = window.calculationData;
+            if (!data) { alert('Сначала выполните расчет!'); return; }
+            const today = new Date().toLocaleDateString('ru-RU');
+            const pdfContent = document.getElementById('pdfContent');
+
+            pdfContent.innerHTML = buildPDFHTML(data);
             pdfContent.style.position = 'fixed'; pdfContent.style.left = '0'; pdfContent.style.top = '0';
             pdfContent.style.zIndex = '-1'; pdfContent.style.opacity = '1'; pdfContent.style.pointerEvents = 'none'; pdfContent.style.background = '#e6f0fa';
 
@@ -452,6 +458,52 @@
                 }).catch(err => {
                     console.error('Ошибка генерации PDF:', err);
                     alert('Не удалось сгенерировать PDF. Попробуйте ещё раз.');
+                    pdfContent.style.position = 'absolute'; pdfContent.style.left = '-9999px'; pdfContent.style.top = '0';
+                });
+            }, 100);
+        }
+
+        function generatePNG() {
+            const data = window.calculationData;
+            if (!data) { alert('Сначала выполните расчет!'); return; }
+            const today = new Date().toLocaleDateString('ru-RU');
+            const pdfContent = document.getElementById('pdfContent');
+
+            pdfContent.innerHTML = buildPDFHTML(data);
+            pdfContent.style.position = 'fixed'; pdfContent.style.left = '0'; pdfContent.style.top = '0';
+            pdfContent.style.zIndex = '-1'; pdfContent.style.opacity = '1'; pdfContent.style.pointerEvents = 'none'; pdfContent.style.background = '#e6f0fa';
+
+            setTimeout(() => {
+                html2canvas(pdfContent, { scale: 2, useCORS: true, letterRendering: true, windowWidth: 794, backgroundColor: '#e6f0fa', scrollX: 0, scrollY: 0 }).then(canvas => {
+                    // Разбиваем canvas на страницы формата A4 и сохраняем каждую как PNG
+                    const pageHeightPx = Math.floor((canvas.width * 297) / 210); // высота A4 в пикселях при ширине canvas
+                    const totalPages = Math.ceil(canvas.height / pageHeightPx);
+                    const fileNameBase = `Расчет_тента_${today.replace(/\./g, '-')}`;
+
+                    for (let page = 0; page < totalPages; page++) {
+                        const pageCanvas = document.createElement('canvas');
+                        pageCanvas.width = canvas.width;
+                        pageCanvas.height = Math.min(pageHeightPx, canvas.height - page * pageHeightPx);
+                        const ctx = pageCanvas.getContext('2d');
+                        ctx.drawImage(
+                            canvas,
+                            0, page * pageHeightPx, canvas.width, pageCanvas.height,
+                            0, 0, pageCanvas.width, pageCanvas.height
+                        );
+                        const pageData = pageCanvas.toDataURL('image/png');
+                        const link = document.createElement('a');
+                        link.download = `${fileNameBase}_стр${page + 1}.png`;
+                        link.href = pageData;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+
+                    pdfContent.style.position = 'absolute'; pdfContent.style.left = '-9999px'; pdfContent.style.top = '0';
+                    pdfContent.style.zIndex = ''; pdfContent.style.opacity = ''; pdfContent.style.pointerEvents = ''; pdfContent.style.background = '';
+                }).catch(err => {
+                    console.error('Ошибка генерации PNG:', err);
+                    alert('Не удалось сгенерировать PNG. Попробуйте ещё раз.');
                     pdfContent.style.position = 'absolute'; pdfContent.style.left = '-9999px'; pdfContent.style.top = '0';
                 });
             }, 100);
